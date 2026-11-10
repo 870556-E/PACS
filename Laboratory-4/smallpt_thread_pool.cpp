@@ -29,8 +29,6 @@
 
 #include <thread_pool.hpp>
 
-print("hello")
-
 // Vec is a structure to store position (x,y,z) and color (r,g,b)
 struct Vec {
     double x, y, z;
