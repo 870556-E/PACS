@@ -6,14 +6,19 @@
 #include <thread>
 #include <utility>
 #include <vector>
+#include <future>
 
 using my_float = long double;
 
-my_float
-pi_taylor_chunk(size_t start_step, size_t stop_step) {
-
-
-
+my_float pi_taylor_chunk(size_t start_step, size_t stop_step) {
+    // std::cout << "pi_taylor_chunk function entered" << '\n';
+    int num = (start_step % 2 == 0) ? 1 : -1;
+    my_float output = 0;
+    for (size_t i = start_step; i < stop_step; i++){
+        output += num/static_cast<my_float>((i << 1) +1 ); // n << 1 is the bitwise operation of displacing a bit to the left, equal to n*2
+        num = -num;
+    }
+    return output;
 }
 
 std::pair<size_t, size_t>
@@ -45,7 +50,33 @@ int main(int argc, const char *argv[]) {
     my_float pi;
 
     // please complete missing parts
+    size_t chunk_start = 0;
+    size_t chunk_end = 0;
 
+    my_float partial_sum = 0;
+    std::vector<std::future<my_float>> futures(threads);
+    
+
+    for (int i=0; i < threads; i++){
+        if (i == threads-1){
+            chunk_end = steps;
+        }
+        else{
+            chunk_end = (i+1)*steps/threads;
+        }
+        // std::cout << "workload divider entered" << '\n';
+        futures[i] = std::async(
+            std::launch::async,
+            pi_taylor_chunk, chunk_start, chunk_end);
+        
+        chunk_start = chunk_end;
+    }
+    
+    for (auto &future : futures) {
+        partial_sum += future.get();
+    }
+
+    pi = 4 * partial_sum;
 
     std::cout << "For " << steps << ", pi value: "
         << std::setprecision(std::numeric_limits<long double>::digits10 + 1)
