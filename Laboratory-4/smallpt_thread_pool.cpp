@@ -29,6 +29,8 @@
 
 #include <thread_pool.hpp>
 
+std::cout << "Hi this is a c++ test github please don't be bad";
+
 // Vec is a structure to store position (x,y,z) and color (r,g,b)
 struct Vec {
     double x, y, z;
